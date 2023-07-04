@@ -1,12 +1,12 @@
 import React from "react";
 import { Camera, CameraType } from "expo-camera";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { StyleSheet, Text, View, Button } from "react-native";
 
 export default function CameraScreen() {
 	const [type, setType] = useState(CameraType.back);
 	const [permission, requestPermission] = Camera.useCameraPermissions();
-
+	const cameraRef = useRef(null);
 	if (!permission) {
 		return <View></View>;
 		// return <Text>Vous n'avez pas la permission</Text>;
@@ -34,7 +34,7 @@ export default function CameraScreen() {
 
 	return (
 		<View style={styles.container}>
-			<Camera style={styles.camera} type={type}>
+			<Camera style={styles.camera} type={type} ref={cameraRef}>
 				{/* <View style={styles.buttonContainer}>
 					<TouchableOpacity style={styles.button} onPress={toggleCameraType}>
 						<Text style={styles.text}>Flip Camera</Text>
@@ -42,7 +42,11 @@ export default function CameraScreen() {
 				</View> */}
 				<Button
 					title="Take a picture"
-					onPress={() => console.log("Pressed")}
+					// onPress={() => console.log("Pressed")}
+					onPress={async () => {
+						const pictureMetadata = await cameraRef.current.takePictureAsync();
+						console.log("pictureMetadata", pictureMetadata);
+					}}
 				></Button>
 			</Camera>
 		</View>
