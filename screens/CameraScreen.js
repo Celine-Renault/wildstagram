@@ -1,10 +1,10 @@
 import React from "react";
-import { Camera, CameraType } from "expo-camera";
-import { useState, useRef } from "react";
+import { Camera } from "expo-camera";
+import { useRef } from "react";
 import { StyleSheet, Text, View, Button } from "react-native";
+import * as ImageManipulator from "expo-image-manipulator";
 
 export default function CameraScreen() {
-	const [type, setType] = useState(CameraType.back);
 	const [permission, requestPermission] = Camera.useCameraPermissions();
 	const cameraRef = useRef(null);
 	if (!permission) {
@@ -25,27 +25,26 @@ export default function CameraScreen() {
 			</View>
 		);
 	}
-
-	// function toggleCameraType() {
-	// 	setType((current) =>
-	// 		current === CameraType.back ? CameraType.front : CameraType.back
-	// 	);
-	// }
-
 	return (
 		<View style={styles.container}>
-			<Camera style={styles.camera} type={type} ref={cameraRef}>
-				{/* <View style={styles.buttonContainer}>
-					<TouchableOpacity style={styles.button} onPress={toggleCameraType}>
-						<Text style={styles.text}>Flip Camera</Text>
-					</TouchableOpacity>
-				</View> */}
+			<Camera style={styles.camera} ref={cameraRef}>
 				<Button
 					title="Take a picture"
 					// onPress={() => console.log("Pressed")}
+					// onPress={async () => {
+					// 	const pictureMetadata = await cameraRef.current.takePictureAsync();
+					// 	console.log("pictureMetadata", pictureMetadata);
+					// }}
 					onPress={async () => {
 						const pictureMetadata = await cameraRef.current.takePictureAsync();
 						console.log("pictureMetadata", pictureMetadata);
+						console.log(
+							// resizing picture
+							// uri nom du fichier present dans le cache du telephone
+							await ImageManipulator.manipulateAsync(pictureMetadata.uri, [
+								{ resize: { width: 800 } },
+							])
+						);
 					}}
 				></Button>
 			</Camera>
