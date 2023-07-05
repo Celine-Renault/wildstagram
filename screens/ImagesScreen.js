@@ -1,8 +1,10 @@
 import React, { useState, useCallback } from "react";
-import { Image, FlatList, StyleSheet } from "react-native";
+import { Image, FlatList, StyleSheet, Button, View } from "react-native";
 // import {View, Image, StyleSheet, Text} from 'react-native';
 import { useFocusEffect } from "@react-navigation/native";
 import * as FileSystem from "expo-file-system";
+import singleFileUploader from "single-file-uploader";
+import Constants from "expo-constants";
 
 export default function ImageScreen() {
 	const [imagesURI, setImagesURI] = useState([]);
@@ -29,13 +31,41 @@ export default function ImageScreen() {
 			renderItem={(itemData) => {
 				console.log("item", itemData);
 				return (
-					<Image
-						style={styles.image}
-						source={{
-							uri:
-								FileSystem.cacheDirectory + "ImageManipulator/" + itemData.item,
-						}}
-					/>
+					<>
+						<Image
+							style={styles.image}
+							source={{
+								uri:
+									FileSystem.cacheDirectory +
+									"ImageManipulator/" +
+									itemData.item,
+							}}
+						/>
+						{/* ajout bouton pour telepcharger un fichier */}
+						<Button
+							title="Upload"
+							onPress={async () => {
+								try {
+									await singleFileUploader({
+										distantUrl:
+											"https://wildstagram.nausicaa.wilders.dev/upload",
+										expectedStatusCode: 201,
+										filename: itemData.item,
+										filetype: "image/jpeg",
+										formDataName: "fileData",
+										localUri:
+											FileSystem.cacheDirectory +
+											"ImageManipulator/" +
+											itemData.item,
+										token: Constants.manifest.extra.token,
+									});
+									alert("Uploaded");
+								} catch (err) {
+									alert("Error");
+								}
+							}}
+						/>
+					</>
 				);
 			}}
 		/>
