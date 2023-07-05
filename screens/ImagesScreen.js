@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from "react";
-import { Image, FlatList, StyleSheet, Button, View } from "react-native";
+import { Image, FlatList, StyleSheet, Button, View, Text } from "react-native";
 // import {View, Image, StyleSheet, Text} from 'react-native';
 import { useFocusEffect } from "@react-navigation/native";
 import * as FileSystem from "expo-file-system";
-import singleFileUploader from "single-file-uploader";
-import Constants from "expo-constants";
+// import singleFileUploader from "single-file-uploader";
+// import Constants from "expo-constants";
+import ImagesScreenItem from "../components/ImagesScreenItem";
 
 export default function ImageScreen() {
 	const [imagesURI, setImagesURI] = useState([]);
@@ -15,7 +16,7 @@ export default function ImageScreen() {
 				const images = await FileSystem.readDirectoryAsync(
 					// cacheDirectory dossier des caches de mon app dans lequels sont enregistré les photos
 					// fonction FileSystem.cacheDirectory pour lire le dossier dans un Hook useFocusEffect
-					FileSystem.cacheDirectory + "ImageManipulator"
+					FileSystem.documentDirectory + "photos"
 				);
 				console.log("images", images);
 				setImagesURI(images);
@@ -28,48 +29,17 @@ export default function ImageScreen() {
 		<FlatList
 			data={imagesURI}
 			keyExtractor={(imageURI) => imageURI}
-			renderItem={(itemData) => {
-				console.log("item", itemData);
-				return (
-					<>
-						<Image
-							style={styles.image}
-							source={{
-								uri:
-									FileSystem.cacheDirectory +
-									"ImageManipulator/" +
-									itemData.item,
-							}}
-						/>
-						{/* ajout bouton pour telepcharger un fichier */}
-						<Button
-							title="Upload"
-							onPress={async () => {
-								try {
-									await singleFileUploader({
-										distantUrl:
-											"https://wildstagram.nausicaa.wilders.dev/upload",
-										expectedStatusCode: 201,
-										filename: itemData.item,
-										filetype: "image/jpeg",
-										formDataName: "fileData",
-										localUri:
-											FileSystem.cacheDirectory +
-											"ImageManipulator/" +
-											itemData.item,
-										token: Constants.manifest.extra.token,
-									});
-									alert("Uploaded");
-								} catch (err) {
-									alert("Error");
-								}
-							}}
-						/>
-					</>
-				);
-			}}
+			renderItem={(itemData) => (
+				<ImagesScreenItem
+					itemData={itemData}
+					imagesURI={imagesURI}
+					setImagesURI={setImagesURI}
+				/>
+			)}
 		/>
-	) : null;
+	) : (
+		<Text>Il n'y a pas d'images à afficher</Text>
+	);
 
 	// lecture/affichage d'une photo avec le core components Images
 	// return imagesURI.length > 0 ? (
@@ -99,9 +69,4 @@ export default function ImageScreen() {
 	// );
 }
 
-const styles = StyleSheet.create({
-	image: {
-		resizeMode: "cover",
-		height: 500,
-	},
-});
+const styles = StyleSheet.create({});
