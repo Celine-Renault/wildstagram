@@ -1,13 +1,14 @@
 import React from "react";
-import { Camera } from "expo-camera";
-import { useRef } from "react";
-import { StyleSheet, Text, View, Button } from "react-native";
+import { Camera, CameraType } from "expo-camera";
+import { useRef, useState } from "react";
+import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as FileSystem from "expo-file-system";
 
 export default function CameraScreen() {
 	const [permission, requestPermission] = Camera.useCameraPermissions();
 	const cameraRef = useRef(null);
+	const [type, setType] = useState(CameraType.back);
 
 	const onPress = async () => {
 		if (!cameraRef.current) {
@@ -69,9 +70,15 @@ export default function CameraScreen() {
 		);
 	}
 
+	function toggleCameraType() {
+		setType((current) =>
+			current === CameraType.back ? CameraType.front : CameraType.back
+		);
+	}
+
 	return (
 		<View style={styles.container}>
-			<Camera style={styles.camera} ref={cameraRef}>
+			<Camera style={styles.camera} ref={cameraRef} type={type}>
 				<Button
 					title="Take a picture"
 					// onPress={() => console.log("Pressed")}
@@ -81,6 +88,11 @@ export default function CameraScreen() {
 					// }}
 					onPress={onPress}
 				></Button>
+				<View style={styles.buttonContainer}>
+					<TouchableOpacity style={styles.button} onPress={toggleCameraType}>
+						<Text style={styles.text}>Flip Camera</Text>
+					</TouchableOpacity>
+				</View>
 			</Camera>
 		</View>
 	);
