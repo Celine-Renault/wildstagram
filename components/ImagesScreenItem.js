@@ -30,7 +30,7 @@ export default function ImagesScreenItem({
 								formDataName: "fileData",
 								localUri:
 									FileSystem.documentDirectory + "photos/" + itemData.item,
-								token: Constants.manifest.extra.token,
+								token: Constants.expoConfig.extra.token,
 							});
 							alert("Uploaded");
 						} catch (err) {

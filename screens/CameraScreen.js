@@ -15,11 +15,16 @@ export default function CameraScreen() {
 			console.log("Error while taking picture");
 			return;
 		}
-
 		// On prend la photo.
 		const pictureMetadata = await cameraRef.current.takePictureAsync();
 
 		// On la redimensionne.
+		console.log("pictureMetadata", pictureMetadata);
+		console.log(
+			await ImageManipulator.manipulateAsync(pictureMetadata.uri, [
+				{ resize: { width: 800 } },
+			])
+		);
 		const resizedImageMetadata = await ImageManipulator.manipulateAsync(
 			pictureMetadata.uri,
 			[{ resize: { width: 800 } }],
@@ -79,15 +84,7 @@ export default function CameraScreen() {
 	return (
 		<View style={styles.container}>
 			<Camera style={styles.camera} ref={cameraRef} type={type}>
-				<Button
-					title="Take a picture"
-					// onPress={() => console.log("Pressed")}
-					// onPress={async () => {
-					// 	const pictureMetadata = await cameraRef.current.takePictureAsync();
-					// 	console.log("pictureMetadata", pictureMetadata);
-					// }}
-					onPress={onPress}
-				></Button>
+				<Button title="Take a picture" onPress={onPress}></Button>
 				<View style={styles.buttonContainer}>
 					<TouchableOpacity style={styles.button} onPress={toggleCameraType}>
 						<Text style={styles.text}>Flip Camera</Text>
